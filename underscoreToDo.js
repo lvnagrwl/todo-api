@@ -45,6 +45,47 @@ app.post('/todos' , function(req , res){
     res.json(body);
 });
 
+app.delete('/todos/:id' , function(req , res){
+
+  var todoId = parseInt(req.params.id);
+  var matchedId = _.findWhere(todo , {id: todoId});
+
+  if(!matchedId){
+  	res.status(404).json({"error" : "No data found with ID"});
+  }else{
+  	todo = _.without(todo , matchedId);
+  	res.json(matchedId);
+  }
+
+});
+app.put('/todos/:id' , function(req , res){
+    var todoId = parseInt(req.params.id);
+    var matchedId = _.findWhere(todo , {id: todoId});
+	var body = _.pick(req.body , 'Description' , 'Completed');
+    var validAttribute = {};
+
+    if(!matchedId){
+    	return res.status(404).send();
+    }
+
+	  if(body.hasOwnProperty('Completed') && _.isBoolean(body.Completed)){
+                   
+                   validAttribute.Completed = body.Completed;     
+	}else if(body.hasOwnProperty('Completed')){
+           return res.status(404).send();
+
+	}
+
+	if(body.hasOwnProperty('Description')  && _.isString(body.Completed) && body.Description.trim().length>0 ){
+		validAttribute.Description = body.Description;
+	
+	}else if(body.hasOwnProperty('Description')){
+        return  res.status(404).send(); 
+	}
+
+	_.extend(matchedId , validAttribute);
+	res.json(matchedId);
+});
 app.listen(PORT , function(){
    console.log('Express listening at ' +PORT + '!');
 });
