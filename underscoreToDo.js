@@ -12,8 +12,20 @@ app.get('/' , function(req , res){
 	res.send('Starting app with underscore');
 });
 
+//GET todos?completed=true
 app.get('/todos' , function(req , res){
-	res.json(todo);
+
+	var queryParams = req.query;
+	var filteredTodo = todo;
+
+    if(queryParams.hasOwnProperty('Completed') && queryParams.Completed == 'true'){
+
+    	filteredTodo = _.where(filteredTodo , {Completed:true});
+    }else if (queryParams.hasOwnProperty('Completed') && queryParams.Completed == 'false'){
+    	filteredTodo = _.where(filteredTodo , {Completed:false});
+    }
+
+	res.json(filteredTodo);
 });
 
 app.get('/todos/:id' , function(req , res) {
