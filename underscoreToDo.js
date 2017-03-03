@@ -71,7 +71,7 @@ app.get('/todos/:id', function(req, res) {
 	// }
 });
 
-app.post('/todo', function(req, res) {
+app.post('/todos', function(req, res) {
 
 	var body = _.pick(req.body, 'Description', 'Completed');
 
