@@ -17,20 +17,32 @@ app.get('/', function(req, res) {
 app.get('/todos', function(req, res) {
 
 	var queryParams = req.query;
-	var filteredTodo = todo;
+	var where = {};
 
 	if (queryParams.hasOwnProperty('Completed') && queryParams.Completed == 'true') {
 
-		filteredTodo = _.where(filteredTodo, {
-			Completed: true
-		});
+		     where.Completed = true
+		
 	} else if (queryParams.hasOwnProperty('Completed') && queryParams.Completed == 'false') {
-		filteredTodo = _.where(filteredTodo, {
-			Completed: false
-		});
+		
+			 where.Completed = false
 	}
 
-	res.json(filteredTodo);
+	if(queryParams.hasOwnProperty('q') && queryParams.q.length > 0){
+		where.Description = {
+
+			$like: '%' + queryParams.q + '%'
+
+		};
+	}
+
+	db.todo.findAll({where: where}).then(function (todos){
+       
+       res.json(todos);
+
+	} , function (e){
+		res.status(404).send();
+	});
 });
 
 app.get('/todos/:id', function(req, res) {
