@@ -156,19 +156,25 @@ app.post('/todos', function(req, res) {
 app.delete('/todos/:id', function(req, res) {
 
 	var todoId = parseInt(req.params.id);
-	db.findById(todoId).then(function(todo1){
-         
-         if(todo1){
+	
+	db.todo.destroy({
 
-         	todo = _.without(todo , todo1);
-         	res.json(todo1);
-
-         }else{
-         	res.status(404).json({
-         		"error" : "No data found with errorID"
-         	});
-         }
+		where:{
+			id: todoId
+		}
+	}).then(function(numberOfRowsDeleted){
+       
+       if(numberOfRowsDeleted === 0){
+       	   res.status(404).json({
+       	   	"error":"No rows to be deleted"
+       	   });
+       }else{
+       	res.status(504).send();
+       }
+	} , function(){
+		res.status(500).send();
 	});
+
 	// var matchedId = _.findWhere(todo, {
 	// 	id: todoId
 	// });
