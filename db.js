@@ -22,6 +22,7 @@ if(env === 'production'){
 var db = {};
 
 db.todo = sequelize.import( __dirname + '/models/todo.js') // loads newly created database in new todo model
+db.user = sequelize.import(__dirname + '/models/user.js') // loads user.js
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
