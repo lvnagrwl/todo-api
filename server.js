@@ -191,33 +191,56 @@ app.delete('/todos/:id', function(req, res) {
 });
 app.put('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id);
-	var matchedId = _.findWhere(todo, {
-		id: todoId
-	});
+	// var matchedId = _.findWhere(todo, {
+	// 	id: todoId
+	// });
 	var body = _.pick(req.body, 'Description', 'Completed');
-	var validAttribute = {};
+	var attributes = {};
+        
+    if(body.hasOwnProperty('Completed')){
+    	attributes.Completed = body.Completed;
+    }
 
-	if (!matchedId) {
-		return res.status(404).send();
-	}
+    if(body.hasOwnProperty('Description')){
+    	attributes.Description = body.Description;
+    }
 
-	if (body.hasOwnProperty('Completed') && _.isBoolean(body.Completed)) {
+   db.todo.findById(todoId).then(function(todo){
 
-		validAttribute.Completed = body.Completed;
-	} else if (body.hasOwnProperty('Completed')) {
-		return res.status(404).send();
+   	   if(todo){
+   	   	return todo.update(attributes).then(function(todo){
+       
+       res.json(todo.toJSON());
+   } , function(e){
+   	      res.status(400).json(e);
+   });
+   	   }else{
+   	   	res.status(404).send();
+   	   }
+   	  },function(){
+           res.status(500).send();
+      });
+	// if (!matchedId) {
+	// 	return res.status(404).send();
+	// }
 
-	}
+	// if (body.hasOwnProperty('Completed') && _.isBoolean(body.Completed)) {
 
-	if (body.hasOwnProperty('Description') && _.isString(body.Completed) && body.Description.trim().length > 0) {
-		validAttribute.Description = body.Description;
+	// 	validAttribute.Completed = body.Completed;
+	// } else if (body.hasOwnProperty('Completed')) {
+	// 	return res.status(404).send();
 
-	} else if (body.hasOwnProperty('Description')) {
-		return res.status(404).send();
-	}
+	// }
 
-	_.extend(matchedId, validAttribute);
-	res.json(matchedId);
+	// if (body.hasOwnProperty('Description') && _.isString(body.Completed) && body.Description.trim().length > 0) {
+	// 	validAttribute.Description = body.Description;
+
+	// } else if (body.hasOwnProperty('Description')) {
+	// 	return res.status(404).send();
+	// }
+
+	// _.extend(matchedId, validAttribute);
+	// res.json(matchedId);
 });
 
 db.sequelize.sync().then(function() {
